@@ -1,33 +1,37 @@
 module.exports = {
   install(Vue) {
     Vue.directive('src', {
-      // µ±±»°ó¶¨µÄÔªËØ²åÈëµ½ DOM ÖĞÊ±¡­¡­
+      // å½“è¢«ç»‘å®šçš„å…ƒç´ æ’å…¥åˆ° DOM ä¸­æ—¶
       inserted(el, binding) {
-        const top = el.getBoundingClientRect().top //¹ö¶¯¾àÀë
-        const wh = window.innerHeight //ÄÚÈİÊÓ¿Ú¸ß¶È£¨ ie8ÒÔÉÏ¼æÈİ£©
-
-        //ÅĞ¶Á¹ö¶¯¾àÀëÊÇ·ñĞ¡ÓÚÄÚÈİÊÓ¿Ú¸ß¶È
+        const top = el.getBoundingClientRect().top //æ»šåŠ¨è·ç¦»
+        const wh = window.innerHeight //å†…å®¹è§†å£é«˜åº¦ï¼ˆ ie8ä»¥ä¸Šå…¼å®¹ï¼‰
+        const host = window.location.origin || 'http://' + window.location.host //baseUrl
+        //å›¾ç‰‡åŠ è½½
+        function picture(el, binding, callback) {
+          setTimeout(() => {
+            const img = new Image()
+            const url = binding.value //å›¾ç‰‡è·¯å¾„
+            img.src = host + '/' + url
+            img.onload = () => {
+              el.src = host + '/' + url
+              if (callback) {
+                callback()
+              }
+            }
+          }, 0)
+        }
+        //åˆ¤è¯»æ»šåŠ¨è·ç¦»æ˜¯å¦å°äºå†…å®¹è§†å£é«˜
         if (top < wh) {
-          const img = new Image()
-          const url = binding.value //Í¼Æ¬Â·¾¶
-          img.src = url
-          img.onload = () => {
-            el.src = url
-          }
+          picture(el, binding)
         } else {
-
           window.addEventListener('scroll', scroll)
 
-          function scroll() {
-            const range = el.getBoundingClientRect().top - wh //¾àÀë
+          function scroll() { 
+            const range = el.getBoundingClientRect().top - wh //è·ç¦»
             if (range < 0) {
-              const img = new Image()
-              const url = binding.value //Í¼Æ¬Â·¾¶
-              img.src = url
-              img.onload = () => {
-                el.src = url
+              picture(el, binding, () => {
                 window.removeEventListener('scroll', scroll)
-              }
+              })
             }
 
           }
