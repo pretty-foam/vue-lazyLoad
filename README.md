@@ -1,6 +1,7 @@
-####Vue 图片懒加载
+#### Vue 图片懒加载
 
-####使用说明
+
+#### 使用说明
    1.在js中注入  
       const lazylaod = require("相应地址")
       Vue.use(lazylaod)
