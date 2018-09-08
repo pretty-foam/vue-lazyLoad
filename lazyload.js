@@ -18,7 +18,7 @@ module.exports = {
                 callback()
               }
             }
-          }, 0)
+          }, 1000)
         }
         //判读滚动距离是否小于内容视口高
         if (top < wh) {
