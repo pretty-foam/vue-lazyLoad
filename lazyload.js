@@ -1,42 +1,43 @@
-module.exports = {
-  install(Vue) {
-    Vue.directive('src', {
-      // 当被绑定的元素插入到 DOM 中时
-      inserted(el, binding) {
-        const top = el.getBoundingClientRect().top //滚动距离
-        const wh = window.innerHeight //内容视口高度（ ie8以上兼容）
+//图片加载处理
+function picture(el, binding, callback) {
+    setTimeout(() => {
+        const img = new Image()
+        const url = binding.value //图片路径
         const host = window.location.origin || 'http://' + window.location.host //baseUrl
-        //图片加载
-        function picture(el, binding, callback) {
-          setTimeout(() => {
-            const img = new Image()
-            const url = binding.value //图片路径
-            img.src = host + '/' + url
-            img.onload = () => {
-              el.src = host + '/' + url
-              if (callback) {
+        img.src = host + '/' + url
+        img.onload = () => {
+            el.src = host + '/' + url
+            //回调处理多余逻辑
+            if (callback) {
                 callback()
-              }
             }
-          }, 1000)
         }
-        //判读滚动距离是否小于内容视口高
-        if (top < wh) {
-          picture(el, binding)
-        } else {
-          window.addEventListener('scroll', scroll)
+    }, 1000)
+}
 
-          function scroll() { 
-            const range = el.getBoundingClientRect().top - wh //距离
-            if (range < 0) {
-              picture(el, binding, () => {
-                window.removeEventListener('scroll', scroll)
-              })
+module.exports = {
+    install(Vue) {
+        Vue.directive('src', {
+            // 当被绑定的元素插入到 DOM 中时
+            inserted(el, binding) {
+                const top = el.getBoundingClientRect().top //滚动距离
+                const wh = window.innerHeight //内容视口高度（ ie8以上兼容）
+                //判读滚动距离是否小于内容视口高，小于执行图片加载函数，大于则添加scroll事件监听
+                if (top < wh) {
+                    picture(el, binding)
+                } else {
+                    //添加监听，加载完图片则移除事件
+                    window.addEventListener('scroll', function scroll() {
+                        const top = el.getBoundingClientRect().top  //距离
+                        if (top < wh) {
+                            picture(el, binding, () => {
+                                window.removeEventListener('scroll', scroll)
+                            })
+                        }
+                    })
+
+                }
             }
-
-          }
-        }
-      }
-    })
-  }
+        })
+    }
 }
