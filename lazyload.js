@@ -5,6 +5,11 @@ function picture(el, binding, callback) {
         const url = binding.value //图片路径
         const host = window.location.origin || 'http://' + window.location.host //baseUrl
         img.src = host + '/' + url
+        img.onerror= ()=>{
+            if (callback) {
+                callback()
+            }
+        }
         img.onload = () => {
             el.src = host + '/' + url
             //回调处理多余逻辑
