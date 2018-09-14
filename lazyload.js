@@ -2,7 +2,7 @@
 function picture(el, binding, callback) {
     setTimeout(() => {
         const img = new Image()
-        const url = binding.value //图片路径
+        const url = binding.value || ''     //图片路径
         const host = window.location.origin || 'http://' + window.location.host //baseUrl
         img.src = host + '/' + url
         img.onerror= ()=>{
